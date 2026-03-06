@@ -3,7 +3,7 @@ from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 from app import db
 from app.models import Transaction, User, Category, Account
-from datetime import UTC, datetime, date
+from datetime import UTC, datetime, date, timedelta
 from decimal import Decimal, InvalidOperation
 from functools import wraps
 from flask import Blueprint, current_app, jsonify, request
@@ -235,7 +235,7 @@ def login_user():
         return jsonify({"error": "Password verification failed."}), 500
 
     # Put the user ID inside the signed JWT token
-    access_token = create_access_token(identity=str(user.id))
+    access_token = create_access_token(identity=str(user.id), expires_delta=timedelta(minutes=current_app.config["JWT_EXPIRATION_MINUTES"]))
 
     return jsonify({
         "message": "Login successful.",
