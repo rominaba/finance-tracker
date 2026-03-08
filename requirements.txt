@@ -3,3 +3,8 @@ Flask-SQLAlchemy
 Flask-Migrate
 psycopg2-binary
 python-dotenv
+PyJWT
+argon2-cffi
+Flask-JWT-Extended
+pytest
+requests

@@ -1,17 +1,29 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from .routes import bp
+from flask_jwt_extended import JWTManager
 
 db = SQLAlchemy()
 migrate = Migrate()
+jwt = JWTManager()
 
-def create_app():
+def create_app(test_config=None):
     app = Flask(__name__)
-    app.config.from_object("app.config.Config")
+
+    if test_config is None:
+        app.config.from_object("app.config.Config")
+    else:
+        app.config.update(test_config)
 
     db.init_app(app)
     migrate.init_app(app, db)
-    app.register_blueprint(bp)
+    jwt.init_app(app)
+
+    from .routes import api_bp
+    app.register_blueprint(api_bp)
+
+    @app.get("/health")
+    def health_check():
+        return {"status": "ok", "message": "Finance backend is running."}, 200
 
     return app
