@@ -30,4 +30,5 @@ export function renderTransactions(transactions, tbodyId, emptyMessageId = null)
     `;
     tbody.appendChild(row);
   });
+
 }
