@@ -20,4 +20,5 @@ export function populateUserLabel() {
   userLabel.textContent = user?.email
     ? `Logged in as ${user.email}`
     : "Logged in";
+
 }
