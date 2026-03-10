@@ -25,4 +25,5 @@ export async function refreshTransactionsPage() {
       message.className = "error";
     }
   }
+
 }
