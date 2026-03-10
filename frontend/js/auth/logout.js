@@ -8,4 +8,5 @@ export function setupLogout() {
     clearSession();
     window.location.href = "/login.html";
   });
+
 }
