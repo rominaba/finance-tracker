@@ -49,4 +49,5 @@ export function setupAddTransaction() {
       message.className = "error";
     }
   });
+
 }
