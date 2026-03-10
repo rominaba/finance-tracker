@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Finance Tracker - Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <header class="topbar">
+      <div>
+        <h1>Finance Tracker</h1>
+        <p id="user-label"></p>
+      </div>
+
+      <div class="topbar-actions">
+        <a class="nav-link" href="/transactions.html">Transactions</a>
+        <button id="logout-btn" type="button">Logout</button>
+      </div>
+    </header>
+
+    <section class="card">
+      <h2>Dashboard</h2>
+      <p id="dashboard-message"></p>
+    </section>
+
+    <section class="summary-grid">
+      <div class="card">
+        <h3>Total Transactions</h3>
+        <p id="summary-count" class="big-number">0</p>
+      </div>
+
+      <div class="card">
+        <h3>Total Amount</h3>
+        <p id="summary-total" class="big-number">$0.00</p>
+      </div>
+
+      <div class="card">
+        <h3>Income</h3>
+        <p id="summary-income" class="big-number">$0.00</p>
+      </div>
+
+      <div class="card">
+        <h3>Expenses</h3>
+        <p id="summary-expense" class="big-number">$0.00</p>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-header">
+        <h2>Recent Transactions</h2>
+        <a class="nav-link" href="/transactions.html">Manage All</a>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Date</th>
+            <th>Account</th>
+            <th>Category</th>
+            <th>Amount</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody id="dashboard-transactions-body"></tbody>
+      </table>
+    </section>
+  </div>
+
+  <script type="module" src="js/dashboard/summary.js"></script>
+</body>
+</html>
