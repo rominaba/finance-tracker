@@ -22,4 +22,5 @@ async function initTransactionsPage() {
   await refreshTransactionsPage();
 }
 
+
 initTransactionsPage();
