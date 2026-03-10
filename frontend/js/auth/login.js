@@ -30,4 +30,5 @@ if (form && message) {
       message.className = "error";
     }
   });
+
 }
