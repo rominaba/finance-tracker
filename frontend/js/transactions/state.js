@@ -10,4 +10,5 @@ export async function loadTransactions() {
   const result = await getTransactions();
   transactions = result.transactions || [];
   return transactions;
+
 }
