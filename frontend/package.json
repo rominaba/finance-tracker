@@ -2,6 +2,6 @@
   "name": "finance-tracker-frontend",
   "version": "0.1.0",
   "scripts": {
-    "build": "mkdir -p dist && cp index.html dist/index.html"
+    "build": "rm -rf dist && mkdir dist && cp -r index.html login.html dashboard.html transactions.html style.css js dist/"
   }
 }
