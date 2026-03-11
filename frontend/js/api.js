@@ -19,7 +19,7 @@ async function request(path, options = {}) {
   try {
     data = await response.json();
   } catch {
-    data = null;
+    data = {};
   }
 
   if (!response.ok) {
@@ -32,6 +32,13 @@ async function request(path, options = {}) {
 
 export async function loginUser(email, password) {
   return request("/auth/login", {
+    method: "POST",
+    body: JSON.stringify({ email, password }),
+  });
+}
+
+export async function registerUser(email, password) {
+  return request("/auth/register", {
     method: "POST",
     body: JSON.stringify({ email, password }),
   });
