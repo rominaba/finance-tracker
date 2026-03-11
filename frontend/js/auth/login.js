@@ -1,34 +1,85 @@
-import { loginUser } from "../api.js";
+
+import { loginUser, registerUser } from "../api.js";
 import { setSession, getToken } from "./session.js";
 
-const form = document.getElementById("login-form");
-const message = document.getElementById("login-message");
+document.addEventListener("DOMContentLoaded", () => {
+  const loginForm = document.getElementById("login-form");
+  const loginMessage = document.getElementById("login-message");
 
-if (getToken()) {
-  window.location.href = "/dashboard.html";
-}
+  const registerForm = document.getElementById("register-form");
+  const registerMessage = document.getElementById("register-message");
 
-if (form && message) {
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+  // Simple email validation
+  function isValidEmail(email) {
+    const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return pattern.test(email);
+  }
 
-    message.textContent = "Logging in...";
-    message.className = "";
+  if (getToken()) {
+    window.location.href = "/dashboard.html";
+  }
 
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
+  if (loginForm && loginMessage) {
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-    try {
-      const result = await loginUser(email, password);
-      setSession(result.access_token, result.user);
-      message.textContent = "Login successful.";
-      message.className = "success";
+      loginMessage.textContent = "Logging in...";
+      loginMessage.className = "";
 
-      window.location.href = "/dashboard.html";
-    } catch (error) {
-      message.textContent = error.message;
-      message.className = "error";
-    }
-  });
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
 
-}
+      if (!isValidEmail(email)) {
+        loginMessage.textContent = "Invalid email.";
+        loginMessage.className = "error";
+        return;
+      }
+
+      try {
+        const result = await loginUser(email, password);
+        setSession(result.access_token, result.user);
+
+        loginMessage.textContent = "Login successful.";
+        loginMessage.className = "success";
+
+        window.location.href = "/dashboard.html";
+      } catch (error) {
+        loginMessage.textContent = error.message;
+        loginMessage.className = "error";
+      }
+    });
+  }
+
+  if (registerForm && registerMessage) {
+    registerForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      registerMessage.textContent = "Registering...";
+      registerMessage.className = "";
+
+      const email = document.getElementById("register-email").value.trim();
+      const password = document.getElementById("register-password").value;
+
+      if (!isValidEmail(email)) {
+        registerMessage.textContent = "Invalid email.";
+        registerMessage.className = "error";
+        return;
+      }
+
+      try {
+        const result = await registerUser(email, password);
+        console.log("REGISTER RESPONSE:", result); // debug
+
+        registerMessage.textContent =
+          "Registration successful. You can now login.";
+        registerMessage.className = "success";
+
+        // Optional: clear form after successful registration
+        registerForm.reset();
+      } catch (error) {
+        registerMessage.textContent = error.message;
+        registerMessage.className = "error";
+      }
+    });
+  }
+});
