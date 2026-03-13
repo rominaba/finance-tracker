@@ -24,7 +24,7 @@ export function renderTransactions(transactions, tbodyId, emptyMessageId = null)
       <td>${tx.id}</td>
       <td>${tx.transaction_date ?? ""}</td>
       <td>${tx.account_id ?? ""}</td>
-      <td>${tx.category_id ?? ""}</td>
+      <td>${tx.category_type ?? ""}</td>
       <td>${tx.amount ?? ""}</td>
       <td>${tx.description ?? ""}</td>
     `;
