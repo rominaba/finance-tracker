@@ -31,4 +31,5 @@ export async function populateAccountsDropdown() {
     option.textContent = `${account.name} (${account.type})`;
     select.appendChild(option);
   });
+
 }
