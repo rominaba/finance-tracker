@@ -7,8 +7,14 @@ export function setupAddTransaction() {
 
   if (!form || !message) return;
 
+  const submitBtn = form.querySelector('button[type="submit"]');
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
+
+    if (submitBtn) {
+      submitBtn.disabled = true;
+    }
 
     message.textContent = "Creating transaction...";
     message.className = "";
@@ -43,11 +49,15 @@ export function setupAddTransaction() {
       form.reset();
       message.textContent = "Transaction created successfully.";
       message.className = "success";
+
       await refreshTransactionsPage();
     } catch (error) {
-      message.textContent = error.message;
+      message.textContent = error.message || "Failed to create transaction.";
       message.className = "error";
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+      }
     }
   });
-
 }
