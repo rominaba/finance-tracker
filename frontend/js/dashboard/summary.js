@@ -14,12 +14,13 @@ function computeSummary(transactions) {
 
   for (const tx of transactions) {
     const amount = Number(tx.amount || 0);
-    total += amount;
 
-    if (amount >= 0) {
+    if (tx.category_type === "income") {
       income += amount;
-    } else {
-      expense += Math.abs(amount);
+      total += amount;
+    } else if (tx.category_type === "expense") {
+      expense += amount;
+      total -= amount;
     }
   }
 
