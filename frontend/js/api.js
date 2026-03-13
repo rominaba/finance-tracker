@@ -44,6 +44,10 @@ export async function registerUser(email, password) {
   });
 }
 
+export async function getAccounts() {
+  return request("/accounts");
+}
+
 export async function getTransactions() {
   return request("/transactions");
 }
