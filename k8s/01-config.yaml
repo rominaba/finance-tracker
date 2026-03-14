@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: finance-tracker-config
+  namespace: finance-tracker
+data:
+  DB_NAME: finance_db
+  DB_HOST: db
+  DB_PORT: "5432"
