@@ -1,17 +1,10 @@
 import { getToken } from "./auth/session.js";
 
-function resolveApiBase() {
-  if (window.location.hostname === "localhost") {
-    return "http://localhost:5001";
-  }
-
-  // When deployed, frontend is on app.* and backend is on api.*.
-  const host = window.location.hostname;
-  const apiHost = host.startsWith("app.") ? `api.${host.slice(4)}` : host;
-  return `${window.location.protocol}//${apiHost}`;
-}
-
-const API_BASE = resolveApiBase();
+const API_BASE =
+  window.location.hostname === "localhost" ||
+  window.location.hostname === "127.0.0.1"
+    ? "http://localhost:5001"
+    : "/api";
 
 async function request(path, options = {}) {
   const token = getToken();
@@ -34,7 +27,8 @@ async function request(path, options = {}) {
   }
 
   if (!response.ok) {
-    const message = data?.error || data?.message || `Request failed: ${response.status}`;
+    const message =
+      data?.error || data?.message || `Request failed: ${response.status}`;
     throw new Error(message);
   }
 
@@ -59,6 +53,13 @@ export async function getAccounts() {
   return request("/accounts");
 }
 
+export async function createAccount(account) {
+  return request("/accounts", {
+    method: "POST",
+    body: JSON.stringify(account),
+  });
+}
+
 export async function getTransactions() {
   return request("/transactions");
 }
@@ -67,5 +68,11 @@ export async function createTransaction(transaction) {
   return request("/transactions", {
     method: "POST",
     body: JSON.stringify(transaction),
+  });
+}
+
+export async function deleteTransaction(transactionId) {
+  return request(`/transactions/${transactionId}`, {
+    method: "DELETE",
   });
 }
