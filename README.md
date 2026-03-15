@@ -3,24 +3,26 @@
 This project runs with Docker Compose, and starts the API, Postgres, and frontend together.
 
 ## Prerequisites
+
 - Docker Desktop
 
 ## Quick Start
+
 1. Create your local env file by copying .env.example.
 2. Fill in values and rename your copy to `.env`.
 3. Start everything:
-   - `docker compose up --build`
+  - `docker compose up --build`
 
 ## Service URLs
+
 - Frontend: `http://localhost:3000`
 - Backend API: `http://localhost:5001`
 - Postgres: `localhost:5432`
 
 ## Shutting Down
+
 - Stop containers: `docker compose down`
 - Stop and remove DB data volume: `docker compose down -v`
-
-
 
 # Backend API Overview
 
@@ -35,7 +37,6 @@ All API endpoints are registered on the `api_bp` blueprint in `routes.py`, plus 
     - Registers a new user with `email`, `password`.
   - **POST `/auth/login`**
     - Authenticates user and returns a JWT access token.
-
 - **Transactions**
   - **POST `/transactions`** (JWT required)
     - Creates a transaction (implicitly ensures category exists, and updates account balance).
@@ -47,7 +48,6 @@ All API endpoints are registered on the `api_bp` blueprint in `routes.py`, plus 
     - Updates transaction fields and re-adjusts account balances.
   - **DELETE `/transactions/<int:transaction_id>`** (JWT required)
     - Deletes a transaction and rolls back its effect on the account balance.
-
 - **Accounts**
   - **POST `/accounts`** (JWT required)
     - Creates an account or returns an existing one if same name+type already exists for the user.
@@ -59,7 +59,6 @@ All API endpoints are registered on the `api_bp` blueprint in `routes.py`, plus 
     - Updates name, type, and optionally balance; enforces uniqueness of (name, type) per user.
   - **DELETE `/accounts/<int:account_id>`** (JWT required)
     - Deletes the account.
-
 - **Categories**
   - **POST `/categories`** (JWT required)
     - Creates a category for the user, enforcing rules on name/type combinations.
@@ -83,20 +82,17 @@ From `models.py`:
   - Fields: `id`, `email` (unique), `password_hash`, `created_at`
   - Relations:
     - `accounts`: `User` → many `Account` (`db.relationship("Account", backref="user", cascade="all, delete")`)
-
 - **Account**
   - Table: `accounts`
   - Fields: `id`, `user_id (FK users.id)`, `name`, `type`, `balance`, `created_at`
   - Relations:
     - `user`: each account belongs to a user.
     - `transactions`: `Account` → many `Transaction` (`cascade="all, delete"`)
-
 - **Category**
   - Table: `categories`
   - Fields: `id`, `user_id (FK users.id)`, `name`, `type` (`income`/`expense`), `created_at`
   - Constraints:
     - `UniqueConstraint("user_id", "name", name="uq_user_category")` – a user cannot have two categories with the same name, regardless of type (although logic adds extra constraints, see below).
-
 - **Transaction**
   - Table: `transactions`
   - Fields: `id`, `account_id (FK accounts.id)`, `category_id (FK categories.id, ondelete="SET NULL")`, `amount`, `description`, `transaction_date`, `created_at`
@@ -106,7 +102,6 @@ From `models.py`:
 - **User ↔ Account**:
   - All account queries are filtered by `user_id` (via `get_current_user()` + `get_user_account_or_404`).
   - On user deletion (DB cascade), their accounts and transactions are deleted.
-
 - **User ↔ Category**:
   - Categories are always tied to a `user_id`.
   - Category conflict rules:
@@ -115,9 +110,8 @@ From `models.py`:
       - same name + same type → reuse existing category
       - same name + opposite type → reject
       - missing name → use or create `"uncategorized income"` or `"uncategorized expense"`.
-
 - **Account ↔ Transaction ↔ Category**:
-  - Each transaction references an account and a category.
+  - Each transaction references an account and a category (`category_type` and `account_id`are required).
   - Helper `transaction_to_dict` plus `get_transaction_category_type` (which may fetch category from DB) is used to attach category type for balance calculations.
   - **Balance logic**:
     - Transactions are always stored as non-negative values. But, the balance logic interprets them, as +/- depending on category type, to keep account balances up-to-date after their corresponding transaction calls.
@@ -141,36 +135,30 @@ Validation is centralized via helper functions at the top of `routes.py`, and th
 
 **Helper validators (all in `routes.py`):**
 
-- **`clean_string(value, field_name, required=True, max_length=None)`**
+- `**clean_string(value, field_name, required=True, max_length=None)`**
   - Ensures required presence, type is `str`, trimmed, non-empty when required.
   - Optionally enforces maximum length.
   - Used for: `email`, `password`, account name & type, category name & type, transaction description, etc.
-
-- **`clean_email(email)`**
+- `**clean_email(email)**`
   - Calls `clean_string` with `max_length=255` and `required=True`.
   - Basic structural check (`"@" in email and "." in email`).
   - Used in `/auth/register`, `/auth/login`.
-
-- **`clean_password(password)`**
+- `**clean_password(password)**`
   - Uses `clean_string`.
   - Checks `len(password) >= 8`.
   - Used in auth routes.
-
-- **`clean_decimal(value, field_name)`**
+- `**clean_decimal(value, field_name)**`
   - Converts to `Decimal` using `Decimal(str(value))`.
   - On failure (`InvalidOperation`, `ValueError`, `TypeError`), raises `ValueError("<field> must be a valid number.")`.
   - Used for transaction `amount`, account `balance`, recalculated balances.
-
-- **`clean_int(value, field_name, required=True)`**
+- `**clean_int(value, field_name, required=True)**`
   - Casts to `int`; on failure raises `ValueError`.
   - Used for IDs coming from JSON or query params: `account_id`, `category_id`, `transaction_id` where applicable.
-
-- **`clean_transaction_date(value)`**
+- `**clean_transaction_date(value)**`
   - If `None`, defaults to `date.today()`.
   - Requires a `YYYY-MM-DD` string; raises `ValueError` on format error.
   - Used for adding and updating transactions
-
-- **`get_category_type_or_400(category_type)`**
+- `**get_category_type_or_400(category_type)**`
   - Ensures non-empty string; normalizes to lowercase.
   - Ensures type is `"income"` or `"expense"`, else raises `ValueError`.
   - Used for adding and updating transactions and categories
@@ -187,24 +175,20 @@ Error handling is consistently done via `try/except` blocks in the routes, retur
   - Almost all routes wrap their core logic in `try` and catch `ValueError as e`:
     - Rollback DB session (for write operations).
     - Return `400` with `{"error": str(e)}`.
-
 - **Database integrity errors (`IntegrityError`)**
   - `create_transaction`, `create_account`, `create_category`, `update_account`, `update_category` catch `IntegrityError`:
     - For create account/category, they may re-query to see if entity already exists and return either `200` with existing entity or `409` conflict (`"Duplicate ... data violates uniqueness rules."`).
     - For update account/category, return `409` conflict if uniqueness is violated.
-
 - **Authentication / authorization**
   - `get_current_user()` uses `get_jwt_identity` and fetches `User` by ID; if parse fails or user not found, routes typically respond with:
     - `{"error": "User not found."}`, `404`.
   - 401-specific responses used on login failure:
     - `{"error": "Invalid email or password."}`, `401`.
-
 - **Resource not found**
   - Helpers:
     - `get_user_account_or_404`, `get_user_category_or_404`, `get_user_transaction_or_404` return `None` if not found.
   - Routes check return value and respond with `404` and appropriate message:
     - `"Account not found."`, `"Category not found."`, `"Transaction not found."` or `"Account not found or does not belong to the user."`.
-
 - **Generic exceptions**
   - For each mutating route:
     - Catch `Exception` as a final fallback, `db.session.rollback()`, and return `400` or `500` with a generic error, e.g.:
@@ -224,7 +208,9 @@ Error handling is consistently done via `try/except` blocks in the routes, retur
 ---
 
 ## Health Endpoints
+
 The health endpoints are located in `app/__init__.py`:
+
 - **GET `/health`** verifies that the application is running.
 - **GET `/health/db`** verifies that the application can reach the database.
 
@@ -235,5 +221,4 @@ The health endpoints are located in `app/__init__.py`:
 Logging of outcomes is mainly handled through HTTP responses. Additional logs regarding the intermediary steps of processes are maintained using `logging.getLogger()`, which is configured in `routes.py`.
 
 ---
-
 
