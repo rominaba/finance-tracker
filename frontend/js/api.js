@@ -34,7 +34,8 @@ async function request(path, options = {}) {
   }
 
   if (!response.ok) {
-    const message = data?.error || data?.message || `Request failed: ${response.status}`;
+    const message =
+      data?.error || data?.message || `Request failed: ${response.status}`;
     throw new Error(message);
   }
 
@@ -59,6 +60,13 @@ export async function getAccounts() {
   return request("/accounts");
 }
 
+export async function createAccount(account) {
+  return request("/accounts", {
+    method: "POST",
+    body: JSON.stringify(account),
+  });
+}
+
 export async function getTransactions() {
   return request("/transactions");
 }
@@ -67,5 +75,11 @@ export async function createTransaction(transaction) {
   return request("/transactions", {
     method: "POST",
     body: JSON.stringify(transaction),
+  });
+}
+
+export async function deleteTransaction(transactionId) {
+  return request(`/transactions/${transactionId}`, {
+    method: "DELETE",
   });
 }
