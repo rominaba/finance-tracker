@@ -25,10 +25,6 @@ api_bp = Blueprint("main", __name__)
 password_hasher = PasswordHasher()
 
 
-@api_bp.route("/")
-def home():
-    return "Finance Tracker API is running!"
-
 
 # -------- Helper Functions --------
 def clean_string(value, field_name, required=True, max_length=None):
