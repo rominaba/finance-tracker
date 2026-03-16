@@ -5,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
+from sqlalchemy import text
 
 logger = logging.getLogger(__name__)
 
@@ -61,5 +62,17 @@ def create_app(test_config=None):
     @app.get("/health")
     def health_check():
         return {"status": "ok", "message": "Finance backend is running."}, 200
+
+    @app.get("/health/db")
+    def health_check_db():
+        """Readiness check: verifies the application can reach the database."""
+        try:
+            db.session.execute(text("SELECT 1"))
+            return {"status": "ok", "message": "Database connection is healthy."}, 200
+        except Exception:
+            return {
+                "status": "error",
+                "message": "Database connection failed.",
+            }, 503
 
     return app
