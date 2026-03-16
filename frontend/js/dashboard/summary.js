@@ -55,8 +55,10 @@ async function initDashboard() {
     document.getElementById("summary-expense").textContent = formatCurrency(summary.expense);
 
     renderTransactions(
-      transactions.slice(0, 5),
-      "dashboard-transactions-body"
+     transactions.slice(0, 5),
+     "dashboard-transactions-body",
+     {},
+     false
     );
 
     if (message) {
