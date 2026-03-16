@@ -52,15 +52,7 @@ export function renderTransactions(
           <td>${tx.category_name || tx.category_type || ""}</td>
           <td>${formatAmount(tx)}</td>
           <td>${tx.description || ""}</td>
-          <td>
-            <button
-              type="button"
-              class="delete-transaction-btn"
-              data-id="${tx.id}"
-            >
-              Delete
-            </button>
-          </td>
+          <td></td>
         </tr>
       `;
     })
