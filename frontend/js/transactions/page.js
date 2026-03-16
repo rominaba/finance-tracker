@@ -116,6 +116,12 @@ export async function initTransactionsPage() {
     console.error("Failed to populate accounts dropdown:", error);
   }
 
+  const dateInput = document.getElementById("transaction-date");
+if (dateInput) {
+  const today = new Date().toISOString().split("T")[0];
+  dateInput.max = today;
+}
+  
   setupAddTransaction();
   setupRefresh();
   setupDeleteButtons();
