@@ -41,13 +41,13 @@ export function renderTransactions(
   }
 
   tbody.innerHTML = transactions
-    .map((tx) => {
+    .map((tx, index) => {
       const accountName =
         accountsMap[String(tx.account_id)] || `Account #${tx.account_id ?? ""}`;
 
       return `
         <tr>
-          <td>${tx.id ?? ""}</td>
+          <td>${index+1}</td>
           <td>${formatDate(tx.transaction_date || tx.date)}</td>
           <td>${accountName}</td>
           <td>${tx.category_name || tx.category_type || ""}</td>

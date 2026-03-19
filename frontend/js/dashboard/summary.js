@@ -1,5 +1,6 @@
 import { requireAuth, populateUserLabel } from "../auth/guard.js";
 import { setupLogout } from "../auth/logout.js";
+import { getAccounts } from "../api.js";
 import { loadTransactions } from "../transactions/state.js";
 import { renderTransactions } from "../transactions/render.js";
 
@@ -47,6 +48,13 @@ async function initDashboard() {
     }
 
     const transactions = await loadTransactions();
+    const accountsResult = await getAccounts();
+    const accounts = accountsResult.accounts || [];
+
+    const accountsMap = {};
+    accounts.forEach((acc) => {
+      accountsMap[String(acc.id)] = acc.name;
+    });
     const summary = computeSummary(transactions);
 
     document.getElementById("summary-count").textContent = String(summary.count);
@@ -57,7 +65,7 @@ async function initDashboard() {
     renderTransactions(
      transactions.slice(0, 5),
      "dashboard-transactions-body",
-     {},
+     accountsMap,
      false
     );
 
