@@ -99,3 +99,24 @@ kubectl logs -n finance-tracker deploy/frontend
 - `api.174.138.113.111.sslip.io`
 
 If the ingress load balancer IP changes, update the hostnames in `k8s/05-ingress.yaml` to match the new IP.
+
+### Deployment Commands
+Once you've used `doctl auth init` and `kubectl config current-context` is `do-tor1-finance-tracker-k8s`, you can redeploy using the following commands:
+
+```
+NS=finance-tracker
+REGISTRY=registry.digitalocean.com/finance-tracker-registry
+TAG=<whatever you want>
+
+BACKEND_IMAGE=$REGISTRY/finance-tracker-api:$TAG
+FRONTEND_IMAGE=$REGISTRY/finance-tracker-frontend:$TAG
+
+docker build -t "$BACKEND_IMAGE" .
+docker push "$BACKEND_IMAGE"
+
+docker build -t "$FRONTEND_IMAGE" ./frontend
+docker push "$FRONTEND_IMAGE"
+
+kubectl -n "$NS" set image deployment/backend backend="$BACKEND_IMAGE"
+kubectl -n "$NS" set image deployment/frontend frontend="$FRONTEND_IMAGE"
+```
