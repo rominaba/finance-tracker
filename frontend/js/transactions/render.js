@@ -16,10 +16,14 @@ function formatAmount(transaction) {
 function formatDate(dateValue) {
   if (!dateValue) return "";
 
-  const date = new Date(dateValue);
-  if (Number.isNaN(date.getTime())) return dateValue;
-
-  return date.toLocaleDateString();
+  const dateExtracted = String(dateValue).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (dateExtracted) {
+    const year = Number(dateExtracted[1]);
+    const month = Number(dateExtracted[2]) - 1; // 0 indexed
+    const day = Number(dateExtracted[3]);
+    const localDate = new Date(year, month, day);
+    return localDate.toLocaleDateString();
+  }
 }
 
 export function renderTransactions(
