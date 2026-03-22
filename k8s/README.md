@@ -140,6 +140,18 @@ docker push "$BACKEND_IMAGE"
 docker push "$FRONTEND_IMAGE"
 ```
 
+### Troubleshooting `ErrImagePull`: no match for platform in manifest
+
+DigitalOcean Kubernetes nodes are **linux/amd64**. If you build images on Apple Silicon without setting the platform, the registry may only have **arm64** manifests and new pods will fail to pull while older cached pods keep running.
+
+Build and push for amd64 (example frontend):
+
+```bash
+docker buildx build --platform linux/amd64 -t "$FRONTEND_IMAGE" --push ./frontend
+```
+
+Same idea for the backend image from the repo root. Use `docker buildx create --use` once if you have no builder.
+
 ### Apply in Order
 ```bash
 kubectl apply -f k8s/00-namespace.yaml
