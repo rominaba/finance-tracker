@@ -275,43 +275,6 @@ data:
           ],
           "title": "Backend app — HTTP requests / s (by method & status)",
           "type": "timeseries"
-        },
-        {
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "fieldConfig": { "defaults": { "unit": "s" }, "overrides": [] },
-          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 24 },
-          "id": 8,
-          "options": { "legend": { "displayMode": "table", "placement": "bottom" } },
-          "targets": [
-            {
-              "expr": "histogram_quantile(0.95, sum(rate(flask_http_request_duration_seconds_bucket{namespace=\"finance-tracker\"}[5m])) by (le))",
-              "legendFormat": "p95 latency",
-              "refId": "A"
-            },
-            {
-              "expr": "histogram_quantile(0.50, sum(rate(flask_http_request_duration_seconds_bucket{namespace=\"finance-tracker\"}[5m])) by (le))",
-              "legendFormat": "p50 latency",
-              "refId": "B"
-            }
-          ],
-          "title": "Backend app — request latency (Flask)",
-          "type": "timeseries"
-        },
-        {
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "fieldConfig": { "defaults": { "unit": "none" }, "overrides": [] },
-          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 24 },
-          "id": 9,
-          "options": { "legend": { "displayMode": "table", "placement": "bottom" } },
-          "targets": [
-            {
-              "expr": "sum(flask_http_request_inprogress{namespace=\"finance-tracker\"})",
-              "legendFormat": "in-flight",
-              "refId": "A"
-            }
-          ],
-          "title": "Backend app — in-flight HTTP requests",
-          "type": "timeseries"
         }
       ],
       "refresh": "15s",

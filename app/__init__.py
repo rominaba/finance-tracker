@@ -17,7 +17,7 @@ jwt = JWTManager()
 def create_app(test_config=None):
     app = Flask(__name__)
 
-    # Expose /metrics for Prometheus (HTTP counters, latency histogram, etc.)
+    # Expose /metrics for Prometheus (HTTP request metrics, etc.)
     PrometheusMetrics(app, path="/metrics")
 
     if test_config is None:

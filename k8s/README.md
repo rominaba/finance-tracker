@@ -75,7 +75,7 @@ Grafana Dashboards (backend/frontend/db)
 - `k8s/07-grafana.yaml` deploys Grafana with:
   - Provisioned Prometheus datasource
   - **Finance Tracker - CPU and DB storage** — CPU for backend/frontend/db + DB PVC disk
-  - **Finance Tracker - Memory, Network & App** — container memory & network (cadvisor) + **Flask HTTP** metrics (request rate, latency, in-flight) from the backend `/metrics` endpoint
+  - **Finance Tracker - Memory, Network & App** — container memory & network (cadvisor) + **Flask HTTP** request rate from the backend `/metrics` endpoint
 
 Access Grafana UI:
 ```bash
