@@ -1,6 +1,7 @@
 import logging
 
 from flask import Flask, request
+from prometheus_flask_exporter import PrometheusMetrics
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
@@ -15,6 +16,9 @@ jwt = JWTManager()
 
 def create_app(test_config=None):
     app = Flask(__name__)
+
+    # Expose /metrics for Prometheus (HTTP counters, latency histogram, etc.)
+    PrometheusMetrics(app, path="/metrics")
 
     if test_config is None:
         app.config.from_object("app.config.Config")
