@@ -1,0 +1,38 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-restore
+  namespace: finance-tracker
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: restore
+          image: <your-dockerhub-username>/pg-backup:latest
+          command: ["/scripts/restore.sh"]
+
+          env:
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: finance-tracker-secrets
+                  key: POSTGRES_USER
+
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: finance-tracker-secrets
+                  key: POSTGRES_DB
+
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: spaces-secret
+                  key: AWS_ACCESS_KEY_ID
+
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: spaces-secret
+                  key: AWS_SECRET_ACCESS_KEY

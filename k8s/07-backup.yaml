@@ -1,0 +1,41 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: db-backup
+  namespace: finance-tracker
+spec:
+  schedule: "*/5 * * * *"   # every 5 minutes (good for demo)
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: backup
+              image: <your-dockerhub-username>/pg-backup:latest
+              command: ["/scripts/backup.sh"]
+
+              env:
+                - name: PGUSER
+                  valueFrom:
+                    secretKeyRef:
+                      name: finance-tracker-secrets
+                      key: POSTGRES_USER
+
+                - name: DB_NAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: finance-tracker-secrets
+                      key: POSTGRES_DB
+
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: spaces-secret
+                      key: AWS_ACCESS_KEY_ID
+
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: spaces-secret
+                      key: AWS_SECRET_ACCESS_KEY
