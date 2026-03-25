@@ -4,7 +4,7 @@ metadata:
   name: db-backup
   namespace: finance-tracker
 spec:
-  schedule: "*/5 * * * *"   # every 5 minutes (good for demo)
+  schedule: "*/30 * * * *"
   jobTemplate:
     spec:
       template:
@@ -12,7 +12,7 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: backup
-              image: <your-dockerhub-username>/pg-backup:latest
+              image: registry.digitalocean.com/finance-tracker-registry/pg-backup:latest
               command: ["/scripts/backup.sh"]
 
               env:
@@ -20,13 +20,19 @@ spec:
                   valueFrom:
                     secretKeyRef:
                       name: finance-tracker-secrets
-                      key: POSTGRES_USER
+                      key: DB_USER
 
-                - name: DB_NAME
+                - name: PGPASSWORD
                   valueFrom:
                     secretKeyRef:
                       name: finance-tracker-secrets
-                      key: POSTGRES_DB
+                      key: DB_PASSWORD
+
+                - name: DB_NAME
+                  valueFrom:
+                    configMapKeyRef:
+                      name: finance-tracker-config
+                      key: DB_NAME
 
                 - name: AWS_ACCESS_KEY_ID
                   valueFrom:

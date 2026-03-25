@@ -9,7 +9,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: restore
-          image: <your-dockerhub-username>/pg-backup:latest
+          image: registry.digitalocean.com/finance-tracker-registry/pg-backup:latest
           command: ["/scripts/restore.sh"]
 
           env:
@@ -17,13 +17,19 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: finance-tracker-secrets
-                  key: POSTGRES_USER
+                  key: DB_USER
 
-            - name: DB_NAME
+            - name: PGPASSWORD
               valueFrom:
                 secretKeyRef:
                   name: finance-tracker-secrets
-                  key: POSTGRES_DB
+                  key: DB_PASSWORD
+
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: finance-tracker-config
+                  key: DB_NAME
 
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
