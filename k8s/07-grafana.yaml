@@ -1,0 +1,347 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: grafana-admin
+  namespace: finance-tracker
+type: Opaque
+stringData:
+  GF_SECURITY_ADMIN_USER: ft-admin
+  GF_SECURITY_ADMIN_PASSWORD: admin321
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-datasources
+  namespace: finance-tracker
+data:
+  datasource.yaml: |
+    apiVersion: 1
+    datasources:
+      # uid must match dashboard JSON: "datasource": { "uid": "prometheus" }
+      - name: Prometheus
+        uid: prometheus
+        type: prometheus
+        access: proxy
+        url: http://prometheus.finance-tracker.svc.cluster.local:9090
+        isDefault: true
+        editable: false
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards-provider
+  namespace: finance-tracker
+data:
+  dashboards.yaml: |
+    apiVersion: 1
+    providers:
+      - name: default
+        orgId: 1
+        folder: ""
+        type: file
+        disableDeletion: false
+        updateIntervalSeconds: 10
+        allowUiUpdates: true
+        options:
+          path: /var/lib/grafana/dashboards
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-finance-tracker
+  namespace: finance-tracker
+data:
+  finance-tracker-resources.json: |
+    {
+      "annotations": { "list": [] },
+      "editable": true,
+      "fiscalYearStartMonth": 0,
+      "graphTooltip": 0,
+      "id": null,
+      "links": [],
+      "liveNow": false,
+      "panels": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": { "defaults": { "unit": "cores" }, "overrides": [] },
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+          "id": 1,
+          "options": { "legend": { "displayMode": "table", "placement": "bottom" } },
+          "targets": [
+            {
+              "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"finance-tracker\",pod=~\"backend-.*\",container!=\"\"}[5m]))",
+              "legendFormat": "backend",
+              "refId": "A"
+            }
+          ],
+          "title": "Backend CPU (cores)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": { "defaults": { "unit": "cores" }, "overrides": [] },
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+          "id": 2,
+          "options": { "legend": { "displayMode": "table", "placement": "bottom" } },
+          "targets": [
+            {
+              "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"finance-tracker\",pod=~\"frontend-.*\",container!=\"\"}[5m]))",
+              "legendFormat": "frontend",
+              "refId": "A"
+            }
+          ],
+          "title": "Frontend CPU (cores)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": { "defaults": { "unit": "cores" }, "overrides": [] },
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+          "id": 3,
+          "options": { "legend": { "displayMode": "table", "placement": "bottom" } },
+          "targets": [
+            {
+              "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"finance-tracker\",pod=~\"db-.*\",container!=\"\"}[5m]))",
+              "legendFormat": "db",
+              "refId": "A"
+            }
+          ],
+          "title": "DB CPU (cores)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+          "id": 4,
+          "options": { "legend": { "displayMode": "table", "placement": "bottom" } },
+          "targets": [
+            {
+              "expr": "sum(kubelet_volume_stats_used_bytes{namespace=\"finance-tracker\",persistentvolumeclaim=~\"db-data-.*\"}) or sum(container_ephemeral_storage_usage_bytes{namespace=\"finance-tracker\",pod=~\"db-.*\",container!=\"\"}) or sum(container_fs_usage_bytes{namespace=\"finance-tracker\",pod=~\"db-.*\",container!=\"\"})",
+              "legendFormat": "db",
+              "refId": "A"
+            }
+          ],
+          "title": "DB Disk Usage (bytes)",
+          "type": "timeseries"
+        }
+      ],
+      "refresh": "15s",
+      "schemaVersion": 39,
+      "style": "dark",
+      "tags": ["finance-tracker", "cpu", "disk"],
+      "templating": { "list": [] },
+      "time": { "from": "now-1h", "to": "now" },
+      "timepicker": {},
+      "timezone": "",
+      "title": "Finance Tracker - Resources",
+      "uid": "finance-tracker-cpu-disk",
+      "version": 3,
+      "weekStart": ""
+    }
+  finance-tracker-memory-network-app.json: |
+    {
+      "annotations": { "list": [] },
+      "editable": true,
+      "fiscalYearStartMonth": 0,
+      "graphTooltip": 0,
+      "id": null,
+      "links": [],
+      "liveNow": false,
+      "panels": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
+          "gridPos": { "h": 8, "w": 8, "x": 0, "y": 0 },
+          "id": 1,
+          "options": { "legend": { "displayMode": "table", "placement": "bottom" } },
+          "targets": [
+            {
+              "expr": "sum(container_memory_working_set_bytes{namespace=\"finance-tracker\",pod=~\"backend-.*\",container!=\"\"})",
+              "legendFormat": "backend",
+              "refId": "A"
+            }
+          ],
+          "title": "Backend memory (working set)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
+          "gridPos": { "h": 8, "w": 8, "x": 8, "y": 0 },
+          "id": 2,
+          "options": { "legend": { "displayMode": "table", "placement": "bottom" } },
+          "targets": [
+            {
+              "expr": "sum(container_memory_working_set_bytes{namespace=\"finance-tracker\",pod=~\"frontend-.*\",container!=\"\"})",
+              "legendFormat": "frontend",
+              "refId": "A"
+            }
+          ],
+          "title": "Frontend memory (working set)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
+          "gridPos": { "h": 8, "w": 8, "x": 16, "y": 0 },
+          "id": 3,
+          "options": { "legend": { "displayMode": "table", "placement": "bottom" } },
+          "targets": [
+            {
+              "expr": "sum(container_memory_working_set_bytes{namespace=\"finance-tracker\",pod=~\"db-.*\",container!=\"\"})",
+              "legendFormat": "db",
+              "refId": "A"
+            }
+          ],
+          "title": "DB memory (working set)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": { "defaults": { "unit": "Bps" }, "overrides": [] },
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+          "id": 4,
+          "options": { "legend": { "displayMode": "table", "placement": "bottom" } },
+          "targets": [
+            {
+              "expr": "sum(rate(container_network_receive_bytes_total{namespace=\"finance-tracker\",pod=~\"backend-.*\"}[5m]))",
+              "legendFormat": "RX",
+              "refId": "A"
+            },
+            {
+              "expr": "sum(rate(container_network_transmit_bytes_total{namespace=\"finance-tracker\",pod=~\"backend-.*\"}[5m]))",
+              "legendFormat": "TX",
+              "refId": "B"
+            }
+          ],
+          "title": "Backend network throughput",
+          "type": "timeseries"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": { "defaults": { "unit": "Bps" }, "overrides": [] },
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+          "id": 5,
+          "options": { "legend": { "displayMode": "table", "placement": "bottom" } },
+          "targets": [
+            {
+              "expr": "sum(rate(container_network_receive_bytes_total{namespace=\"finance-tracker\",pod=~\"frontend-.*\"}[5m]))",
+              "legendFormat": "RX",
+              "refId": "A"
+            },
+            {
+              "expr": "sum(rate(container_network_transmit_bytes_total{namespace=\"finance-tracker\",pod=~\"frontend-.*\"}[5m]))",
+              "legendFormat": "TX",
+              "refId": "B"
+            }
+          ],
+          "title": "Frontend network throughput",
+          "type": "timeseries"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": { "defaults": { "unit": "Bps" }, "overrides": [] },
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+          "id": 6,
+          "options": { "legend": { "displayMode": "table", "placement": "bottom" } },
+          "targets": [
+            {
+              "expr": "sum(rate(container_network_receive_bytes_total{namespace=\"finance-tracker\",pod=~\"db-.*\"}[5m]))",
+              "legendFormat": "RX",
+              "refId": "A"
+            },
+            {
+              "expr": "sum(rate(container_network_transmit_bytes_total{namespace=\"finance-tracker\",pod=~\"db-.*\"}[5m]))",
+              "legendFormat": "TX",
+              "refId": "B"
+            }
+          ],
+          "title": "DB network throughput",
+          "type": "timeseries"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+          "id": 7,
+          "options": { "legend": { "displayMode": "table", "placement": "bottom" } },
+          "targets": [
+            {
+              "expr": "sum by (method, status) (rate(flask_http_request_total{namespace=\"finance-tracker\"}[5m]))",
+              "legendFormat": "{{method}} {{status}}",
+              "refId": "A"
+            }
+          ],
+          "title": "Backend app — HTTP requests / s (by method & status)",
+          "type": "timeseries"
+        }
+      ],
+      "refresh": "15s",
+      "schemaVersion": 39,
+      "style": "dark",
+      "tags": ["finance-tracker", "memory", "network", "app"],
+      "templating": { "list": [] },
+      "time": { "from": "now-1h", "to": "now" },
+      "timepicker": {},
+      "timezone": "",
+      "title": "Finance Tracker - Memory, Network & App",
+      "uid": "finance-tracker-mem-net-app",
+      "version": 1,
+      "weekStart": ""
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  namespace: finance-tracker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+        - name: grafana
+          image: grafana/grafana:11.2.2
+          ports:
+            - containerPort: 3000
+              name: web
+          envFrom:
+            - secretRef:
+                name: grafana-admin
+          volumeMounts:
+            - name: datasource
+              mountPath: /etc/grafana/provisioning/datasources
+            - name: dashboard-provider
+              mountPath: /etc/grafana/provisioning/dashboards
+            - name: dashboard-json
+              mountPath: /var/lib/grafana/dashboards
+      volumes:
+        - name: datasource
+          configMap:
+            name: grafana-datasources
+        - name: dashboard-provider
+          configMap:
+            name: grafana-dashboards-provider
+        - name: dashboard-json
+          configMap:
+            name: grafana-dashboard-finance-tracker
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  namespace: finance-tracker
+spec:
+  selector:
+    app: grafana
+  ports:
+    - name: web
+      port: 3000
+      targetPort: web
