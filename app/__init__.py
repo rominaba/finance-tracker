@@ -7,12 +7,14 @@ from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from sqlalchemy import text
+from flask_socketio import SocketIO
 
 logger = logging.getLogger(__name__)
 
 db = SQLAlchemy()
 migrate = Migrate()
 jwt = JWTManager()
+socketio = SocketIO(cors_allowed_origins="*")
 
 def create_app(test_config=None):
     app = Flask(__name__)
@@ -59,6 +61,7 @@ def create_app(test_config=None):
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
+    socketio.init_app(app)
 
     from .routes import api_bp
     app.register_blueprint(api_bp)
