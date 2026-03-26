@@ -11,6 +11,7 @@ from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_requir
 from sqlalchemy.exc import IntegrityError
 
 from app import db
+from app import socketio
 from app.models import Account, Category, Transaction, User
 
 
@@ -447,6 +448,7 @@ def create_transaction():
         )
 
         db.session.commit()
+        socketio.emit("data_updated", {"type": "transaction_created"})
 
     except ValueError as e:
         db.session.rollback()
@@ -629,6 +631,8 @@ def delete_transaction(transaction_id):
         )
         db.session.delete(transaction)
         db.session.commit()
+        socketio.emit("data_updated", {"type": "transaction_deleted"})
+        
     except Exception as e:
         db.session.rollback()
         return jsonify({
