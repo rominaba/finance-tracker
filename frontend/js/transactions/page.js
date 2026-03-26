@@ -130,3 +130,14 @@ if (dateInput) {
 }
 
 initTransactionsPage();
+
+const socket = io();
+
+socket.on("connect", () => {
+  console.log("WS connected (transactions)");
+});
+
+socket.on("data_updated", async () => {
+  console.log("Realtime update (transactions)");
+  await refreshTransactionsPage();
+});
