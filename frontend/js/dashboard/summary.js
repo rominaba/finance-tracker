@@ -83,3 +83,14 @@ async function initDashboard() {
 
 
 initDashboard();
+
+const socket = io();
+
+socket.on("connect", () => {
+  console.log("WS connected (dashboard)");
+});
+
+socket.on("data_updated", async () => {
+  console.log("Realtime update (dashboard)");
+  await initDashboard();
+});

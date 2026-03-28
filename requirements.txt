@@ -7,6 +7,8 @@ python-dotenv
 PyJWT
 argon2-cffi
 Flask-JWT-Extended
+Flask-SocketIO
+eventlet
 prometheus-flask-exporter==0.23.1
 pytest
 requests
