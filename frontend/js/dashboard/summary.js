@@ -81,16 +81,43 @@ async function initDashboard() {
   }
 }
 
+async function checkBackendStatus() {
+  const statusEl = document.getElementById("status-backend");
+  const timeEl = document.getElementById("status-time");
 
-initDashboard();
+  if (!statusEl) return;
+
+  try {
+    const res = await fetch("http://localhost:5001/health");
+
+    if (!res.ok) throw new Error();
+
+    statusEl.textContent = "Backend: 🟢 Healthy";
+    statusEl.style.color = "green";
+  } catch (err) {
+    statusEl.textContent = "Backend: 🔴 Down";
+    statusEl.style.color = "red";
+  }
+
+  if (timeEl) {
+    const now = new Date().toLocaleTimeString();
+    timeEl.textContent = `Last checked: ${now}`;
+  }
+}
+
+async function startDashboard() {
+  await initDashboard();
+  await checkBackendStatus();
+}
+
+startDashboard();
 
 const socket = io();
-
-socket.on("connect", () => {
-  console.log("WS connected (dashboard)");
-});
 
 socket.on("data_updated", async () => {
   console.log("Realtime update (dashboard)");
   await initDashboard();
+  await checkBackendStatus();
 });
+
+setInterval(checkBackendStatus, 5000);
