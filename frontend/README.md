@@ -1,3 +1,15 @@
+# App Introduction (Frontend)
+
+The system is designed to provide a simple, responsive, and intuitive user experience. Users can:
+
+- create and manage accounts
+- add and delete transactions
+- view a summarized financial dashboard
+
+The frontend is built using modular JavaScript and dynamic rendering, where data is fetched from the backend API and displayed through reusable components such as transaction tables and summary cards.
+
+A key feature of the frontend is real-time updates using WebSockets. Instead of requiring manual refresh, the dashboard and transaction views automatically update whenever data changes, ensuring consistency across multiple tabs.
+
 # WebSockets Implementation
 
 WebSockets implemented to enable real-time updates. 
