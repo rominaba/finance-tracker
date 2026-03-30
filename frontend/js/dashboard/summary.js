@@ -55,6 +55,7 @@ async function initDashboard() {
     accounts.forEach((acc) => {
       accountsMap[String(acc.id)] = acc.name;
     });
+
     const summary = computeSummary(transactions);
 
     document.getElementById("summary-count").textContent = String(summary.count);
@@ -63,10 +64,10 @@ async function initDashboard() {
     document.getElementById("summary-expense").textContent = formatCurrency(summary.expense);
 
     renderTransactions(
-     transactions.slice(0, 5),
-     "dashboard-transactions-body",
-     accountsMap,
-     false
+      transactions.slice(0, 5),
+      "dashboard-transactions-body",
+      accountsMap,
+      false
     );
 
     if (message) {
@@ -81,6 +82,17 @@ async function initDashboard() {
   }
 }
 
+function resolveHealthUrl() {
+  if (window.location.hostname === "localhost") {
+    return "http://localhost:5001/health";
+  }
+
+  const host = window.location.hostname;
+  const apiHost = host.startsWith("app.") ? `api.${host.slice(4)}` : host;
+
+  return `${window.location.protocol}//${apiHost}/health`;
+}
+
 async function checkBackendStatus() {
   const statusEl = document.getElementById("status-backend");
   const timeEl = document.getElementById("status-time");
@@ -88,7 +100,7 @@ async function checkBackendStatus() {
   if (!statusEl) return;
 
   try {
-    const res = await fetch("http://localhost:5001/health");
+    const res = await fetch(resolveHealthUrl());
 
     if (!res.ok) throw new Error();
 
@@ -105,6 +117,17 @@ async function checkBackendStatus() {
   }
 }
 
+function resolveSocketUrl() {
+  if (window.location.hostname === "localhost") {
+    return "http://localhost:5001";
+  }
+
+  const host = window.location.hostname;
+  const apiHost = host.startsWith("app.") ? `api.${host.slice(4)}` : host;
+
+  return `${window.location.protocol}//${apiHost}`;
+}
+
 async function startDashboard() {
   await initDashboard();
   await checkBackendStatus();
@@ -112,7 +135,11 @@ async function startDashboard() {
 
 startDashboard();
 
-const socket = io();
+const socket = io(resolveSocketUrl());
+
+socket.on("connect", () => {
+  console.log("WS connected (dashboard)");
+});
 
 socket.on("data_updated", async () => {
   console.log("Realtime update (dashboard)");
