@@ -10,6 +10,8 @@ The frontend is built using modular JavaScript and dynamic rendering, where data
 
 A key feature of the frontend is real-time updates using WebSockets. Instead of requiring manual refresh, the dashboard and transaction views automatically update whenever data changes, ensuring consistency across multiple tabs.
 
+A system status card was added that checks backend health and updates automatically. Combined with WebSockets, both the data and system status stay synchronized in real time.
+
 # WebSockets Implementation
 
 WebSockets implemented to enable real-time updates. 
