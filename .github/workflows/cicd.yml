@@ -75,6 +75,11 @@ jobs:
       - name: Install kubectl
         uses: azure/setup-kubectl@v4
 
+      - name: Install doctl (required for DOKS kubeconfig exec auth)
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DOCR_TOKEN }}
+
       - name: Configure kubeconfig
         run: |
           mkdir -p "$HOME/.kube"
