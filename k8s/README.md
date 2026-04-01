@@ -199,3 +199,23 @@ kubectl logs -n finance-tracker deploy/grafana
 - `api.174.138.113.111.sslip.io`
 
 If the ingress load balancer IP changes, update the hostnames in `k8s/05-ingress.yaml` to match the new IP.
+
+### GitHub CI/CD
+A basic GitHub Actions workflow is triggered on push to `main` branch by:
+- `.github/workflows/cicd.yml`
+
+Which performs the following:
+- Builds backend and frontend images
+- Pushes them to DOCR
+- Updates Kubernetes deployments with the new SHA tag
+
+Set these repository secrets in GitHub before using it:
+- `DOCR_USERNAME` (your DigitalOcean registry username)
+- `DOCR_TOKEN` (a DigitalOcean token with registry push/pull access)
+- `KUBE_CONFIG_DATA` (base64 of your kubeconfig file content)
+
+Generate `KUBE_CONFIG_DATA` locally:
+```bash
+base64 -i ~/.kube/config | pbcopy
+```
+Then paste into GitHub secret `KUBE_CONFIG_DATA`.
