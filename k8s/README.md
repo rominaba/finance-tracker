@@ -102,7 +102,7 @@ Login:
   - `doctl kubernetes cluster registry add finance-tracker-k8s`
 
 ### Set Image Tags
-The deployment files currently use `:latest`. For deterministic deploys, set explicit tags:
+The deployment files currently use `:latest`. For deterministic deploys, set explicit tags.
 
 ### Deployment Commands
 Once you've used `doctl auth init` and `kubectl config current-context` is `do-tor1-finance-tracker-k8s`, you can redeploy using the following commands:
