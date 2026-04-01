@@ -192,30 +192,3 @@ kubectl logs -n finance-tracker deploy/frontend
 kubectl logs -n finance-tracker deploy/prometheus
 kubectl logs -n finance-tracker deploy/grafana
 ```
-
-### Basic GitHub CI/CD (push to main/master)
-A basic GitHub Actions workflow is included at:
-- `.github/workflows/cicd.yml`
-
-It triggers on push to `main` or `master`, then:
-- Builds backend and frontend images
-- Pushes them to DOCR
-- Updates Kubernetes deployments with the new SHA tag
-
-Set these repository secrets in GitHub before using it:
-- `DOCR_USERNAME` (your DigitalOcean registry username)
-- `DOCR_TOKEN` (a DigitalOcean token with registry push/pull access)
-- `KUBE_CONFIG_DATA` (base64 of your kubeconfig file content)
-
-Generate `KUBE_CONFIG_DATA` locally:
-```bash
-base64 -i ~/.kube/config | pbcopy
-```
-
-Then paste into GitHub secret `KUBE_CONFIG_DATA`.
-### Ingress Hostnames
-`k8s/05-ingress.yaml` is configured for `sslip.io` using the current ingress IP:
-- `app.174.138.113.111.sslip.io`
-- `api.174.138.113.111.sslip.io`
-
-If the ingress load balancer IP changes, update the hostnames in `k8s/05-ingress.yaml` to match the new IP.
