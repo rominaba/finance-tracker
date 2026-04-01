@@ -58,8 +58,10 @@ jobs:
           context: .
           platforms: linux/amd64
           push: true
+          provenance: false
+          sbom: false
           tags: |
-            ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:${{ env.IMAGE_TAG }}
+            ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:${{ github.sha }}
             ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:latest
 
       - name: Build and push frontend image
@@ -68,8 +70,10 @@ jobs:
           context: ./frontend
           platforms: linux/amd64
           push: true
+          provenance: false
+          sbom: false
           tags: |
-            ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}:${{ env.IMAGE_TAG }}
+            ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}:${{ github.sha }}
             ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}:latest
 
       - name: Install kubectl
