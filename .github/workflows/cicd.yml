@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - CI-CD
   workflow_dispatch:
 
 env:
