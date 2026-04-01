@@ -68,6 +68,7 @@ def create_app(test_config=None):
 
     @app.get("/health")
     def health_check():
+        """Readiness check: verifies the application is running."""
         return {"status": "ok", "message": "Finance backend is running."}, 200
 
     @app.get("/health/db")

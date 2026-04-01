@@ -34,43 +34,49 @@ Deployment Provider:
 Orchestration Approach (Option B: Kubernetes):
 - Kubernetes manifests in this folder (k8s/*) as described above.
 
-Prometheus Monitoring (CPU + Disk)
+Monitoring and Observability:
 - `k8s/06-monitoring.yaml` deploys:
-  - `node-exporter` DaemonSet for node-level CPU and disk filesystem metrics
-  - `prometheus` Deployment + Service + PVC
-  - RBAC + scrape config (kubelet cAdvisor for **container CPU, memory, network**; kubelet resource/volume endpoints for disk where needed)
-  - **`finance-tracker-backend-metrics`** job: scrapes each backend pod’s **`/metrics`** when `prometheus.io/scrape: "true"` is set on the pod template (`k8s/03-backend.yaml`)
+  - Prometheus as the collector and storage. A single prometheus Deployment runs in finance-tracker, reads scrape rules from a ConfigMap, and stores time-series data on a PVC (prometheus-data, 10Gi), so data survives pod restarts.
+    - RBAC gives Premethuse cluster read access. The ServiceAccount + ClusterRole + ClusterRoleBinding let Prometheus discover nodes/pods/endpoints and call Kubernetes metric endpoints (/metrics and kubelet-proxied paths).
+    - Prometheus scrapes (every 15s)
+      - backend Flask pods via pod annotations (prometheus.io/scrape, path, port)
+      - itself (localhost:9090)
+      - kubelet cAdvisor for container CPU-level metrics
+      - kubelet resource metrics for container ephemeral storage usage
+      - kubelet volume stats for PVC used/capacity/available bytes
+      - node-exporter for node CPU/disk/system metrics
+        node-exporter runs as a DaemonSet (one pod per node), mounted to host /proc, /sys, and / to expose host-level metrics on port 9100, then discovered through the node-exporter Service.
 
-  Access Prometheus UI:
-  ```bash
-  kubectl -n finance-tracker port-forward svc/prometheus 9090:9090
-  ```
-  Open:
-  - http://localhost:9090
+    Access Prometheus UI:
+    ```bash
+    kubectl -n finance-tracker port-forward svc/prometheus 9090:9090
+    ```
+    Open:
+    - http://localhost:9090
 
-  Useful PromQL queries:
+    Useful PromQL queries:
 
-  CPU usage per node (%):
-  ```promql
-  100 * (1 - avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])))
-  ```
+    CPU usage per node (%):
+    ```promql
+    100 * (1 - avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])))
+    ```
 
-  Container CPU usage (cores), grouped by pod:
-  ```promql
-  sum by (namespace, pod) (
-    rate(container_cpu_usage_seconds_total{container!="",pod!=""}[5m])
-  )
-  ```
-
-  Disk usage per node filesystem (%):
-  ```promql
-  100 * (
-    1 - (
-      node_filesystem_avail_bytes{fstype!~"tmpfs|overlay"} /
-      node_filesystem_size_bytes{fstype!~"tmpfs|overlay"}
+    Container CPU usage (cores), grouped by pod:
+    ```promql
+    sum by (namespace, pod) (
+      rate(container_cpu_usage_seconds_total{container!="",pod!=""}[5m])
     )
-  )
-  ```
+    ```
+
+    Disk usage per node filesystem (%):
+    ```promql
+    100 * (
+      1 - (
+        node_filesystem_avail_bytes{fstype!~"tmpfs|overlay"} /
+        node_filesystem_size_bytes{fstype!~"tmpfs|overlay"}
+      )
+    )
+    ```
 Grafana Dashboards (backend/frontend/db)
 - `k8s/07-grafana.yaml` deploys Grafana with:
   - Provisioned Prometheus datasource
@@ -186,6 +192,7 @@ kubectl logs -n finance-tracker deploy/frontend
 kubectl logs -n finance-tracker deploy/prometheus
 kubectl logs -n finance-tracker deploy/grafana
 ```
+
 ### Ingress Hostnames
 `k8s/05-ingress.yaml` is configured for `sslip.io` using the current ingress IP:
 - `app.174.138.113.111.sslip.io`
