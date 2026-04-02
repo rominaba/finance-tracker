@@ -116,7 +116,7 @@ TAG=latest
 BACKEND_IMAGE=$REGISTRY/finance-tracker-api:$TAG
 FRONTEND_IMAGE=$REGISTRY/finance-tracker-frontend:$TAG
 
-docker build -t "$BACKEND_IMAGE" .
+docker build -f app/Dockerfile -t "$BACKEND_IMAGE" .
 docker push "$BACKEND_IMAGE"
 
 docker build -t "$FRONTEND_IMAGE" ./frontend
@@ -156,7 +156,13 @@ Build and push for amd64 (example frontend):
 docker buildx build --platform linux/amd64 -t "$FRONTEND_IMAGE" --push ./frontend
 ```
 
-Same idea for the backend image from the repo root. Use `docker buildx create --use` once if you have no builder.
+Same idea for the backend image: run from the repo root with `-f app/Dockerfile` and context `.`, for example:
+
+```bash
+docker buildx build --platform linux/amd64 -f app/Dockerfile -t "$BACKEND_IMAGE" --push .
+```
+
+Use `docker buildx create --use` once if you have no builder.
 
 ### Apply in Order
 ```bash
