@@ -1,0 +1,110 @@
+name: Build And Deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  REGISTRY: registry.digitalocean.com/finance-tracker-registry
+  BACKEND_IMAGE: finance-tracker-api
+  FRONTEND_IMAGE: finance-tracker-frontend
+  NAMESPACE: finance-tracker
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect Kubernetes manifest changes
+        id: k8s
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          BEFORE="${{ github.event.before }}"
+          if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          elif git diff --name-only "$BEFORE" "${{ github.sha }}" | grep -q '^k8s/'; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set image tag
+        run: echo "IMAGE_TAG=${GITHUB_SHA}" >> "$GITHUB_ENV"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to DigitalOcean Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: registry.digitalocean.com
+          username: ${{ secrets.DOCR_USERNAME }}
+          password: ${{ secrets.DOCR_TOKEN }}
+
+      - name: Build and push backend image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64
+          push: true
+          provenance: false
+          sbom: false
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:${{ github.sha }}
+            ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:latest
+
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./frontend
+          platforms: linux/amd64
+          push: true
+          provenance: false
+          sbom: false
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}:${{ github.sha }}
+            ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}:latest
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Install doctl (required for DOKS kubeconfig exec auth)
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DOCR_TOKEN }}
+
+      - name: Configure kubeconfig
+        run: |
+          mkdir -p "$HOME/.kube"
+          echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 --decode > "$HOME/.kube/config"
+
+      - name: Apply Kubernetes manifests
+        if: steps.k8s.outputs.changed == 'true'
+        run: |
+          kubectl apply -f k8s/00-namespace.yaml
+          kubectl apply -f k8s/01-config.yaml
+          kubectl apply -f k8s/02-db.yaml
+          kubectl apply -f k8s/03-backend.yaml
+          kubectl apply -f k8s/04-frontend.yaml
+          kubectl apply -f k8s/05-ingress.yaml
+          kubectl apply -f k8s/06-monitoring.yaml
+          kubectl apply -f k8s/07-grafana.yaml
+          kubectl apply -f k8s/08-backup.yaml
+          kubectl apply -f k8s/09-restore.yaml
+
+      - name: Deploy updated images
+        run: |
+          kubectl -n "$NAMESPACE" set image deployment/backend backend="$REGISTRY/$BACKEND_IMAGE:$IMAGE_TAG"
+          kubectl -n "$NAMESPACE" set image deployment/frontend frontend="$REGISTRY/$FRONTEND_IMAGE:$IMAGE_TAG"
+          kubectl -n "$NAMESPACE" rollout status deployment/backend
+          kubectl -n "$NAMESPACE" rollout status deployment/frontend
