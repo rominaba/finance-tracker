@@ -3,32 +3,31 @@ Finance Tracker is a cloud-based personal finance application designed to help i
 
 ---
 
-### Team Information (TODO)
-Romina Bahrami - student number: 1007924551 - email 
+### Team Information
+Romina Bahrami - student number: 1007924551 - romina.bahrami@mail.utoronto.ca
 
-Mohammad Araf Harun - student number: 1005235844 - email
+Mohammad Araf Harun - student number: 1005235844 - mohammad.harun@mail.utoronto.ca
 
-Brendan Hu - student number: 1012856492 - email
+Brendan Hu - student number: 1012856492 - brendan.hu@mail.utoronto.ca
 
-Mingfei Li - student number: 1005471561 - email
+Mingfei Li - student number: 1005471561 - mingfeibobby.li@mail.utoronto.ca
 
 ---
  
-
 ### Motivation
 Most people lack a simple, reliable way to track and plan their finances due to fragmented tools and costly solutions. This project aims to provide an accessible, cloud-based system that centralizes financial data while ensuring reliability and persistence.
 
 ---
 
 ### Objectives
-The goal of this project is to build a highly available, cloud-based finance tracker that enables users to securely record transactions, monitor budgets, and access real-time financial information from anywhere.
+The goal of this project is to build a durable cloud-based finance tracker that enables users to securely record transactions, monitor budgets, and access real-time financial information from anywhere.
 
 ---
 
 ### Technical Stack
 The application consists of three containerized services orchestrated by Kubernetes and deployed on DigitalOcean, which is explained below in more detail.
 
-There is a Python/Flask backend with Flask-SQLAlchemy and Flask-Migrate for the data layer, a static/HTML + JavaScript frontend served from its own container (Nginx-style static hosting in the frontend image), and PostgreSQL 17 for relational storage. The API exposes REST JSON endpoints, uses Flask-JWT-Extended for authenticated access, Argon2 for password hashing, and Flask-SocketIO for real-time push updates. For monitoring, Prometheus collects metrics from nodes/pods/endpoints, and Grafana displays them in live dashboards. In addition, `health` endpoings, logs, and DigitalOcean's alerting system provide extra levels of observability.
+There is a Python/Flask backend with Flask-SQLAlchemy and Flask-Migrate for the data layer, a static/HTML + JavaScript frontend served from its own container (Nginx-style static hosting in the frontend image), and PostgreSQL 17 for relational storage. The API exposes REST JSON endpoints, uses Flask-JWT-Extended for authenticated access, Argon2 for password hashing, and Flask-SocketIO for real-time push updates. For monitoring, Prometheus collects metrics from nodes/pods/endpoints, and Grafana displays them in live dashboards. In addition, `/health` endpoints, logs, and DigitalOcean's alerting system provide extra levels of observability.
 
 Orchestration is done by Kubernetes. Manifests under `k8s/` define Deployments and Services for the API and frontend, a StatefulSet and Service for Postgres, PersistentVolumeClaims backed by DigitalOcean block storage (do-block-storage) for the database (and for Prometheus TSDB), and an Ingress (nginx class) for HTTP routing. Local development uses Docker Compose to run the same logical services (API + Postgres + frontend) with a named volume for Postgres data.
 
@@ -45,7 +44,7 @@ The deployment is on DigitalOcean; DOKS for the cluster, DigitalOcean Container 
 ---
 
 ### Features
-The application lets users register and log in, then manage accounts, categories, and transactions (create, read, update, delete) so they can track income and expenses and see balances and activity in one place. The dashboard and transaction views update in real time across tabs when data changes, using WebSockets, which supports our objective of timely, accessible financial visibility.These features connect to the course requirements as follows.
+The application lets users register and log in, then manage accounts, and transactions (create, read, update, delete) so they can track income and expenses and see balances and activity in one place. The dashboard and transaction views update in real time across tabs when data changes, using WebSockets, which supports our objective of timely, accessible financial visibility.These features connect to the course requirements as follows.
 #### Core Features
 The full stack is **containerized** with **Docker** and supports **local development via Docker Compose**. PostgreSQL uses **persistent storage** in every environment to ensure data durability across restarts. In local development, this is provided by **Docker volumes**; in Kubernetes, it is provided by **Persistent Volume Claims (PVCs) backed by DigitalOcean Block Storage**.
 
@@ -67,7 +66,6 @@ Additionally, the system includes **security enhancements**, such as JWT-based a
 ---
 
 ### User Guide 
-Provide clear instructions for using **each main feature**?, supported with screenshots where appropriate. (TODO)
 The diagram below demonstrates how to use different features of the app.
 ![Finance Tracker App Workflow](docs/finance-tracker-app-flow.jpg)
 
@@ -100,6 +98,7 @@ Docker Compose builds and starts the API, Postgres, and frontend together with `
 - Frontend: `http://localhost:3000`
 - Backend API: `http://localhost:5001`
 - Postgres: `localhost:5432`
+- Prometheus: `http://localhost:9090`
 
 ##### Shutting down
 
@@ -118,23 +117,19 @@ For prerequisites, apply order, and operations, see [`k8s/README.md`](k8s/README
 ---
 
 ### Deployment Information: 
-Live URL of the application: `app.174.138.113.111.sslip.io`
+Live URL of the application: [http://app.174.138.113.111.sslip.io](http://app.174.138.113.111.sslip.io/)
 
 ---
 
-### AI Assistance & Verification (Summary) (TODO)
+### AI Assistance & Verification (Summary)
 AI tools were used as a **supporting aid** throughout development, primarily for:
 - Exploring architecture decisions (Docker/Kubernetes setup)
 - Generating and refining YAML configurations (K8s, CI/CD workflows)
 - Debugging deployment and configuration issues
 - Polishing code and improving documentation clarity
 
-The team critically evaluated AI suggestions rather than applying them directly. For example,
-TODO: finalize which example to use.
-```
-Temporary:
-In the CI/CD pipeline, AI initially suggested an image tagging approach using `${{ env.IMAGE_TAG }}`, which resulted in incorrectly tagged images in the DigitalOcean registry (empty and `none` tags). In another case, AI helped diagnose a GitHub Actions deployment issue related to missing `doctl` authentication for DigitalOcean Kubernetes access. In both situations, the team verified the root cause through testing and corrected the workflow accordingly.
-```
+The team critically evaluated AI suggestions rather than applying them directly. For example, in one case, in the CI/CD pipeline, AI helped diagnose a GitHub Actions deployment issue related to missing `doctl` authentication for DigitalOcean Kubernetes access. In another instance, AI was used as a starting point to learn how to create DB replicas. In both situations, the team verified the solutions through testing.
+
 
 All AI-generated suggestions were validated through:
 - Local testing before merging to main
@@ -146,16 +141,16 @@ Concrete examples of AI interactions, including prompts, responses, and evaluati
 
 ---
 
-### Individual Contributions (TODO)
+### Individual Contributions
 
-Romina Bahrami: Backend + Authentication & Security + Monitoring & Observability + CI/CD Pipeline
-Mohammad Harun: Database & Data Durability + Backup & Recovery
+Romina Bahrami: Backend + Authentication & Security + Monitoring & Observability + CI/CD Pipeline  
+Mohammad Harun: Initial Project setup + Database & Data Durability + Backup & Recovery  
 Brendan Hu: DevOps & Cloud (Docker, Kubernetes, DO)  
-Bobby Li: Frontend & UX + Real-time Functionality
+Bobby Li: Frontend & UX + Real-time Functionality  
 
 ---
 
-### Lessons Learned and Concluding Remarks (TODO)
+### Lessons Learned and Concluding Remarks
 Developing the Finance Tracker was a valuable experience, showing how a simple app idea can grow into a more complete cloud-based system. One of the biggest lessons learned was that building features is only one part of the work; just as much effort goes into making the system reliable, secure, observable, and maintainable once it is deployed. Working with Kubernetes, persistent storage, monitoring tools, and CI/CD showed how many moving parts are involved in building and running a realistic application.
 
 A particularly important takeaway was how challenging and sensitive it can be to design different elements to maintain compatibility. Defining data policies, handling schema changes and migrations, and ensuring the API, backend logic, and frontend functionality stay consistent with those decisions required careful planning. Even small changes to financial data handling can have a big impact on correctness and long-term maintainability.
