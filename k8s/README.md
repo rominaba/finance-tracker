@@ -85,11 +85,11 @@ Grafana Dashboards (backend/frontend/db)
 
 Access Grafana UI:
 ```bash
-kubectl -n finance-tracker port-forward svc/grafana 3000:3000
+kubectl -n finance-tracker port-forward svc/grafana 3005:3000
 ```
 
 Open:
-- http://localhost:3000
+- http://localhost:3005
 
 Login:
 - username: `ft-admin`
