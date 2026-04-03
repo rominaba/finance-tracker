@@ -112,69 +112,13 @@ This is the “real” 2-replica pattern, unlike a plain StatefulSet with replic
 
 ---
 
-## Session 3: Input validation for Email During Registration
-
+## Session Title 3: Input Validation for Email During Registration
+ 
 ### Prompt (we sent to AI)
+ 
 Use some pattern matching or regex for email validation.
+ 
 ### AI Response (trimmed)
-✅ Recommended Dockerfile (Flask App)
-# Use official lightweight Python image
-FROM python:3.12-slim
-
-# Prevent Python from writing .pyc files
-ENV PYTHONDONTWRITEBYTECODE=1
-
-# Ensure logs appear immediately in Docker
-ENV PYTHONUNBUFFERED=1
-
-# Set working directory
-WORKDIR /app
-
-# Install system dependencies needed for psycopg2
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy requirements first (better Docker caching)
-COPY requirements.txt .
-
-# Install Python dependencies
-RUN pip install --upgrade pip \
-    && pip install --no-cache-dir -r requirements.txt
-
-# Copy application code
-COPY . .
-
-# Expose Flask port
-EXPOSE 5000
-
-# Set Flask environment variables
-ENV FLASK_APP=run.py
-ENV FLASK_RUN_HOST=0.0.0.0
-ENV FLASK_RUN_PORT=5000
-
-# Default command
-CMD ["flask", "run"]
- 
-### What Your Team Did With It
- 
-1-3 bullet points describing:
- 
-- What was useful
-It helped to provide a starting point for local development.
-- What was incorrect, misleading, or not applicable to your project
-There was too much overhead with some of the system requirements.
-- How your team verified, modified, or replaced the suggestion
-We ended up using Python 3.14 instead of 3.12 and having a script run instead of providing the CMD.
-
-## Session Title 3 (Input validation for email during registration)
- 
-### Prompt (you sent to AI)
- 
-Use some pattern matching or regex for email validation.
- 
-### AI Response (trimmed if long)
  
 Good idea 👍. A simple regex email check is still lightweight but better than just checking for @.
 
@@ -216,7 +160,7 @@ test@@gmail.com	❌ invalid
 
 ### What Our Team Did With It
 - What was useful:
-    - It helped to provide an alernative to using another built in library.
+    - It helped to provide an alternative to using another built-in library.
 - What was incorrect, misleading, or not applicable to our project:
     - There was nothing incorrect or misleading as it did provide the output we wanted.
 - How our team verified, modified, or replaced the suggestion:
