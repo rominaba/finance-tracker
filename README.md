@@ -99,6 +99,7 @@ Docker Compose builds and starts the API, Postgres, and frontend together with `
 - Backend API: `http://localhost:5001`
 - Postgres: `localhost:5432`
 - Prometheus: `http://localhost:9090`
+- Grafana: `http://localhost:3005`
 
 ##### Shutting down
 
