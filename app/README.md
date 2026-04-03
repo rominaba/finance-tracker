@@ -2,6 +2,22 @@
 
 ---
 
+## Container image
+
+The API image is defined in [`Dockerfile`](Dockerfile) in this directory. **Always build from the repository root** so the Docker context includes `requirements.txt`, `run.py`, `entrypoint.sh`, `migrations/`, and the `app/` package:
+
+`docker build -f app/Dockerfile -t finance-tracker-api .`
+
+### Local stack (Docker Compose)
+
+[`docker-compose.yml`](../docker-compose.yml) at the repository root defines API, Postgres, and the frontend. Run from the **repository root**:
+
+`docker compose up --build`
+
+See the root [`README.md`](../README.md) for `.env` setup, service URLs, and shutdown.
+
+---
+
 ## Endpoints
 
 All API endpoints are registered on the `api_bp` blueprint in `routes.py`, plus two health endpoints in `__init__.py`.
