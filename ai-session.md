@@ -25,7 +25,7 @@ The AI suggested that doctl must be installed and authenticated before Kubernete
     -We verified the fix by rerunning the workflow and confirming that deployment steps could authenticate successfully against the DOKS cluster.
 
 ---
-## Session 2: Dockerfile for Backend+PostGres Evaluation
+## Session 2: Dockerfile for Backend+PostgreSQL Evaluation
 
 ### Prompt 1 (we sent to AI)
 If we want to have 2 db replicas, what would we do?
