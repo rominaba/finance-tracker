@@ -37,7 +37,7 @@ The deployment is on DigitalOcean; DOKS for the cluster, DigitalOcean Container 
 #### Repository Structure
 
 - `app/`: Backend API service and [`app/Dockerfile`](app/Dockerfile). See [`app/README.md`](app/README.md).
-- [`docker-compose.yml`](docker-compose.yml): Local stack (API, Postgres, frontend); run from the repository root.
+- `docker-compose.yml`: Local stack (API, Postgres, frontend); run from the repository root.
 - `frontend/`: Frontend web application source and usage details. See [`frontend/README.md`](frontend/README.md).
 - `k8s/`: Kubernetes manifests and deployment/operations guidance. See [`k8s/README.md`](k8s/README.md).
 - `backup-restore/`: Backup and restore workflows and scripts. See [`backup-restore/README.md`](backup-restore/README.md).
