@@ -1,6 +1,8 @@
 services:
   api:
-    build: .
+    build:
+      context: .
+      dockerfile: app/Dockerfile
     ports:
       - "5001:5000"
     env_file:
