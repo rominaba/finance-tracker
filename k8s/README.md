@@ -204,7 +204,7 @@ kubectl logs -n finance-tracker deploy/grafana
 - ~~`app.174.138.113.111.sslip.io`~~ (depricated)
 - ~~`api.174.138.113.111.sslip.io`~~ (depricated)
 
-⚠️: If the ingress load balancer IP changes, update the hostnames in `k8s/05-ingress.yaml` to match the new IP.
+⚠️ If the ingress load balancer IP changes, update the hostnames in `k8s/05-ingress.yaml` to match the new IP.
 
 ### GitHub CI/CD
 A basic GitHub Actions workflow is triggered on push to `main` branch by:
