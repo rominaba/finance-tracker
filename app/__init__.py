@@ -33,8 +33,9 @@ def create_app(test_config=None):
             r"/*": {
                 "origins": [
                     "http://localhost:3000",
-                    "http://app.174.138.113.111.sslip.io",
-                    "https://app.174.138.113.111.sslip.io" # in case we end up using HTTPS
+                    # Live application is no longer available
+                    # "http://app.174.138.113.111.sslip.io",
+                    # "https://app.174.138.113.111.sslip.io" # in case we end up using HTTPS
                 ]
             }
         },

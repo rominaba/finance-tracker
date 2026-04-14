@@ -3,14 +3,11 @@ Finance Tracker is a cloud-based personal finance application designed to help i
 
 ---
 
-### Team Information
-Romina Bahrami - student number: 1007924551 - romina.bahrami@mail.utoronto.ca
-
-Mohammad Araf Harun - student number: 1005235844 - mohammad.harun@mail.utoronto.ca
-
-Brendan Hu - student number: 1012856492 - brendan.hu@mail.utoronto.ca
-
-Mingfei Li - student number: 1005471561 - mingfeibobby.li@mail.utoronto.ca
+### Team Members
+Romina Bahrami  
+Mohammad Araf Harun  
+Brendan Hu  
+Mingfei Li
 
 ---
  
@@ -118,7 +115,7 @@ For prerequisites, apply order, and operations, see [`k8s/README.md`](k8s/README
 ---
 
 ### Deployment Information: 
-Live URL of the application: [http://app.174.138.113.111.sslip.io](http://app.174.138.113.111.sslip.io/)
+Live URL of the application: ~~http://app.174.138.113.111.sslip.io~~ (deprecated)
 
 ---
 
